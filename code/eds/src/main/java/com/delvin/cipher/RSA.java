@@ -1,78 +1,92 @@
 package com.delvin.cipher;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-
 import java.math.BigInteger;
+import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
 
-import javax.print.event.PrintEvent;
-
 import com.delvin.printer.Printer;
 
-public class RSA implements Cipher {
+public class RSA {
     private BigInteger e = BigInteger.valueOf(0x10001);
+    private BigInteger p;
+    private BigInteger q;
+    private BigInteger n;
+    private BigInteger d;
+    private BigInteger c;
 
     private MessageDigest hash;
     private Integer keySize;
-    private File inFile;
-    private File outFile;
     private boolean verbose;
 
-    public RSA(String hash, Integer keySize, String inFile, String outFile, boolean verbose)
-            throws NoSuchAlgorithmException {
+    public RSA(String hash, Integer keySize, boolean verbose) throws NoSuchAlgorithmException {
         this.hash = MessageDigest.getInstance(hash);
         this.keySize = keySize / 2;
-        this.inFile = new File(inFile);
-        this.outFile = new File(outFile);
         this.verbose = verbose;
     }
 
-    @Override
-    public void encrypt() throws IOException {
+    public RSA(BigInteger e, BigInteger n, BigInteger c, boolean verbose) {
+        this.e = e;
+        this.n = n;
+        this.c = c;
+        this.verbose = verbose;
+    }
+
+    public byte[] encrypt(byte[] content) {
         if (this.verbose)
             Printer.info("Compute hash...");
 
-        byte[] content = Files.readAllBytes(this.inFile.toPath());
         this.hash.update(content, 0, content.length);
         BigInteger message = new BigInteger(1, this.hash.digest());
 
         if (this.verbose)
             Printer.info("Hash: " + message.toString(16));
 
-        BigInteger p = BigInteger.probablePrime(this.keySize, new Random());
-        BigInteger q = BigInteger.probablePrime(this.keySize, new Random());
+        this.p = BigInteger.probablePrime(this.keySize, new Random());
+        this.q = BigInteger.probablePrime(this.keySize, new Random());
 
         if (this.verbose) {
-            Printer.info("p: " + p.toString(16));
-            Printer.info("q: " + q.toString(16));
+            Printer.info("p: " + this.p.toString(16));
+            Printer.info("q: " + this.q.toString(16));
         }
 
-        BigInteger n = p.multiply(q);
+        this.n = p.multiply(q);
         if (this.verbose)
-            Printer.info("n: " + n.toString(16));
+            Printer.info("n: " + this.n.toString(16));
 
         BigInteger phi = p.subtract(BigInteger.ONE).multiply(q.subtract(BigInteger.ONE));
         if (this.verbose)
             Printer.info("phi: " + phi.toString(16));
 
-        BigInteger d = this.inverse(this.e, phi);
+        this.d = this.inverse(this.e, phi);
         if (this.verbose)
-            Printer.info("d: " + d.toString(16));
+            Printer.info("d: " + this.d.toString(16));
 
-        BigInteger c = message.modPow(this.e, n);
+        this.c = message.modPow(this.d, this.n);
         if (this.verbose)
-            Printer.info("c: " + c.toString(16));
+            Printer.info("c: " + this.c.toString(16));
+
+        byte[] n_arr = this.n.toByteArray();
+        byte[] c_arr = this.c.toByteArray();
+        ByteBuffer out = ByteBuffer.allocateDirect(Integer.BYTES * 2 + n_arr.length + c_arr.length);
+        out.putInt(this.e.intValue());
+        out.putInt(this.n.toByteArray().length);
+        out.put(n_arr);
+        out.put(c_arr);
+        out.rewind();
+        byte[] tmp = new byte[out.remaining()];
+        out.get(tmp);
+        return tmp;
     }
 
-    @Override
-    public void decrypt() {
-
+    public BigInteger decrypt() {
+        BigInteger res = this.c.modPow(this.e, this.n);
+        if (this.verbose)
+            Printer.info("Hash: " + res.toString(16));
+        return res;
     }
 
     private ArrayList<BigInteger> xgcd(BigInteger a, BigInteger b) {

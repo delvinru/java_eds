@@ -14,7 +14,7 @@ class Args {
     private String inFile = "none";
 
     @Parameter(names = { "-o", "--out" }, description = "Output file name")
-    private String outFile = inFile + ".sig";
+    private String outFile = "file.sig";
 
     @Parameter(names = { "-b", "--bytes" }, description = "The size of the key used to generate the EDS")
     private Integer keySize = 4096;
@@ -42,7 +42,7 @@ class Args {
     }
 
     public String getOutFileName() {
-        return this.outFile;
+        return this.inFile + ".sig";
     }
 
     public Integer getKeySize() {
