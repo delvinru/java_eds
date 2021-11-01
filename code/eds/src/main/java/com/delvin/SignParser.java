@@ -78,7 +78,6 @@ public class SignParser {
             this.n = new BigInteger(Arrays.copyOfRange(this.sign, 12, 12 + nSize));
             this.e = new BigInteger(Arrays.copyOfRange(this.sign, 12 + nSize, 12 + nSize + 4));
             this.c = new BigInteger(Arrays.copyOfRange(this.sign, 16 + nSize, this.sign.length - 4));
-            Printer.info("c: " + this.c.toString(16));
 
             if (this.verbose) {
                 Printer.info("n: " + this.n.toString(16));

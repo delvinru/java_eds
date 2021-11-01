@@ -22,9 +22,11 @@ public class PrivateKey implements Key {
 
     private boolean verbose;
 
-    /**
-     * @param keySize - Initialiaze p and q with this keySize
-     */
+    public PrivateKey(byte[] content, boolean verbose) {
+        this.verbose = verbose;
+        this.readKey(content);
+    }
+
     public PrivateKey(Integer keySize, boolean verbose) {
         this.verbose = verbose;
         p = BigInteger.probablePrime(keySize, new Random());

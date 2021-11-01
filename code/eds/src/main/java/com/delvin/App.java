@@ -21,6 +21,7 @@ public class App {
 
         Args args = new Args();
         JCommander jc = JCommander.newBuilder().addObject(args).build();
+        jc.setProgramName("esd");
         try {
             jc.parse(argv);
         } catch (ParameterException e) {
@@ -52,7 +53,7 @@ public class App {
         }
 
         if (!args.checkFileName()) {
-            Printer.error("Please specify the file to be signed.");
+            Printer.error("Please specify the file.");
             jc.usage();
             System.exit(1);
         }

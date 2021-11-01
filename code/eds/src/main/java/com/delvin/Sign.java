@@ -1,5 +1,6 @@
 package com.delvin;
 
+import com.delvin.cipher.PrivateKey;
 import com.delvin.cipher.PublicKey;
 import com.delvin.cipher.RSA;
 import com.delvin.printer.Printer;
@@ -18,6 +19,8 @@ public class Sign {
     private String outFile;
     private String publicKeyFile;
     private String privateKeyFile;
+    private boolean checkPublicKeyFile;
+    private boolean checkPrivateKeyFile;
     private boolean verbose;
     private String[] hashes;
 
@@ -30,18 +33,28 @@ public class Sign {
         this.hashes = args.getAllHashes();
         this.publicKeyFile = args.getPublicKeyFile();
         this.privateKeyFile = args.getPrivateKeyFile();
+        this.checkPublicKeyFile = args.checkPublicKeyFile();
+        this.checkPrivateKeyFile = args.checkPrivateKeyFile();
     }
 
     public void createSign() {
         try {
             File file = new File(this.inFile);
             byte[] content = Files.readAllBytes(file.toPath());
+            RSA rsa;
+            byte[] signature;
 
-            RSA rsa = new RSA(hash, keySize, verbose);
-            byte[] signature = rsa.encrypt(content);
+            if (this.checkPrivateKeyFile) {
+                byte[] privateKeyFileData = Files.readAllBytes(new File(this.privateKeyFile).toPath());
+                PrivateKey privateKey = new PrivateKey(privateKeyFileData, verbose);
+                rsa = new RSA(this.hash, privateKey);
+                signature = rsa.encrypt(content);
+            } else {
+                rsa = new RSA(hash, keySize, verbose);
+                signature = rsa.encrypt(content);
+                this.dumpKeyPair(rsa);
+            }
             this.saveToFile(content, signature);
-            this.dumpKeyPair(rsa);
-
         } catch (Exception e) {
             Printer.error("Got error: " + e.toString());
         }
@@ -103,11 +116,16 @@ public class Sign {
         Printer.success("Saved to " + this.outFile);
     }
 
-    private void verifySign(byte[] content) {
+    private void verifySign(byte[] content) throws IOException {
         SignParser parser = new SignParser(this.verbose);
         parser.parse(content);
 
-        RSA rsa = new RSA(new PublicKey(parser.getModulo(), parser.getPublicExponent()));
+        RSA rsa;
+        if (this.checkPublicKeyFile)
+            rsa = new RSA(new PublicKey(Files.readAllBytes(new File(this.publicKeyFile).toPath()), verbose));
+        else
+            rsa = new RSA(new PublicKey(parser.getModulo(), parser.getPublicExponent()));
+
         BigInteger originalHash = rsa.decrypt(parser.getSignature(), verbose);
 
         boolean flagFInd = false;

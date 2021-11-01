@@ -11,12 +11,11 @@ class Args {
     private String mode = "sign";
     private String[] modes = { "sign", "check" };
 
-    // TODO: add check for empty file
     @Parameter(names = { "-f", "--file" }, description = "The file to be signed")
     private String inFile;
 
     @Parameter(names = { "-o", "--out" }, description = "Output file name")
-    private String outFile = "file.sig";
+    private String outFile;
 
     @Parameter(names = { "-b", "--bytes" }, description = "The size of the key used to generate the EDS")
     private Integer keySize = 4096;
@@ -29,10 +28,10 @@ class Args {
     private boolean generate = false;
 
     @Parameter(names = { "-pub", "--public" }, description = "A file with a public key.")
-    private String publicKeyFile = "key.pub";
+    private String publicKeyFile;
 
     @Parameter(names = { "-prv", "--private" }, description = "A file with a private key.")
-    private String privateKeyFile = "key.prv";
+    private String privateKeyFile;
 
     @Parameter(names = { "-v", "--verbose" }, description = "Verbose logs in console")
     private boolean verbose = false;
@@ -82,11 +81,27 @@ class Args {
     }
 
     public String getPublicKeyFile() {
+        if (this.publicKeyFile == null || this.publicKeyFile.isEmpty())
+            return "key.pub";
         return this.publicKeyFile;
     }
 
+    public boolean checkPublicKeyFile() {
+        if (this.publicKeyFile == null || this.publicKeyFile.isEmpty())
+            return false;
+        return true;
+    }
+
     public String getPrivateKeyFile() {
+        if (this.privateKeyFile == null || this.privateKeyFile.isEmpty())
+            return "key.prv";
         return this.privateKeyFile;
+    }
+
+    public boolean checkPrivateKeyFile() {
+        if (this.privateKeyFile == null || this.privateKeyFile.isEmpty())
+            return false;
+        return true;
     }
 
     public boolean getGenerateFlag() {

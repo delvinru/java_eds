@@ -12,6 +12,12 @@ public class RSA {
     private MessageDigest hash;
     private boolean verbose;
 
+    public RSA(String hash, PrivateKey privateKey) throws NoSuchAlgorithmException {
+        this.publicKey = new PublicKey(privateKey);
+        this.privateKey = privateKey;
+        this.hash = MessageDigest.getInstance(hash);
+    }
+
     public RSA(String hash, Integer keySize, boolean verbose) throws NoSuchAlgorithmException {
         this.hash = MessageDigest.getInstance(hash);
         this.verbose = verbose;
