@@ -1,12 +1,8 @@
 package com.delvin.cipher;
 
 import java.math.BigInteger;
-import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Random;
 
 import com.delvin.printer.Printer;
 
@@ -24,6 +20,10 @@ public class RSA {
             Printer.info("Generating keys...");
         this.privateKey = new PrivateKey(keySize / 2, verbose);
         this.publicKey = new PublicKey(privateKey);
+    }
+
+    public RSA(PublicKey publicKey) {
+        this.publicKey = publicKey;
     }
 
     public byte[] encrypt(byte[] content) {
@@ -57,10 +57,10 @@ public class RSA {
         return this.publicKey.dumpKey();
     }
 
-    // public BigInteger decrypt() {
-    // BigInteger res = this.c.modPow(this.e, this.n);
-    // if (this.verbose)
-    // Printer.info("Decrypted string: " + res.toString(16));
-    // return res;
-    // }
+    public BigInteger decrypt(BigInteger signature, boolean verbose) {
+        BigInteger res = signature.modPow(publicKey.getExponent(), publicKey.getModulo());
+        if (verbose)
+            Printer.info("Decrypted string: " + res.toString(16));
+        return res;
+    }
 }

@@ -1,8 +1,10 @@
 package com.delvin;
 
+import com.delvin.cipher.PublicKey;
 import com.delvin.cipher.RSA;
 import com.delvin.printer.Printer;
 import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -45,15 +47,15 @@ public class Sign {
         }
     }
 
-    // public void checkSign() {
-    // try {
-    // File file = new File(this.inFile);
-    // byte[] content = Files.readAllBytes(file.toPath());
-    // this.verifySign(content);
-    // } catch (Exception e) {
-    // e.printStackTrace();
-    // }
-    // }
+    public void checkSign() {
+        try {
+            File file = new File(this.inFile);
+            byte[] content = Files.readAllBytes(file.toPath());
+            this.verifySign(content);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     private void dumpKeyPair(RSA rsa) {
         try {
@@ -101,32 +103,31 @@ public class Sign {
         Printer.success("Saved to " + this.outFile);
     }
 
-    // private void verifySign(byte[] content) {
-    // SignParser parser = new SignParser(this.verbose);
-    // parser.parse(content);
-    // RSA rsa = new RSA(parser.getExponent(), parser.getModulo(),
-    // parser.getSignature(), this.verbose);
+    private void verifySign(byte[] content) {
+        SignParser parser = new SignParser(this.verbose);
+        parser.parse(content);
 
-    // byte[] fileContent = parser.getFileContent();
-    // BigInteger decryptedHash = rsa.decrypt();
-    // String[] hashes = this.hashes;
+        RSA rsa = new RSA(new PublicKey(parser.getModulo(), parser.getPublicExponent()));
+        BigInteger originalHash = rsa.decrypt(parser.getSignature(), verbose);
 
-    // boolean flag = false;
-    // try {
-    // for (String hash_type : hashes) {
-    // MessageDigest tmpHash = MessageDigest.getInstance(hash_type);
-    // tmpHash.update(fileContent, 0, fileContent.length);
+        boolean flagFInd = false;
 
-    // if (decryptedHash.equals(new BigInteger(1, tmpHash.digest()))) {
-    // Printer.success("The file has not been modified, the signature is correct.");
-    // flag = true;
-    // break;
-    // }
-    // }
-    // if (!flag)
-    // Printer.warning("The contents of the file have been changed");
-    // } catch (Exception e) {
-    // e.printStackTrace();
-    // }
-    // }
+        byte[] fileContent = parser.getFileContent();
+
+        try {
+            for (String hash_type : this.hashes) {
+                MessageDigest testHash = MessageDigest.getInstance(hash_type);
+                testHash.update(fileContent, 0, fileContent.length);
+                if (originalHash.equals(new BigInteger(1, testHash.digest()))) {
+                    Printer.success("The file has not been modified, the signature is correct.");
+                    flagFInd = true;
+                    break;
+                }
+            }
+        } catch (NoSuchAlgorithmException e) {
+        }
+
+        if (!flagFInd)
+            Printer.warning("The contents of the file have been changed");
+    }
 }

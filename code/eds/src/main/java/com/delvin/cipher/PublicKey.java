@@ -11,6 +11,11 @@ public class PublicKey implements Key {
     private BigInteger e;
     private boolean verbose;
 
+    public PublicKey(BigInteger n, BigInteger e) {
+        this.n = n;
+        this.e = e;
+    }
+
     public PublicKey(byte[] content, boolean verbose) {
         this.verbose = verbose;
         this.readKey(content);
@@ -24,11 +29,10 @@ public class PublicKey implements Key {
     @Override
     public byte[] dumpKey() {
         byte[] n_arr = this.n.toByteArray();
-        byte[] e_arr = this.e.toByteArray();
-        ByteBuffer out = ByteBuffer.allocateDirect(Integer.BYTES + n_arr.length + e_arr.length);
+        ByteBuffer out = ByteBuffer.allocateDirect(Integer.BYTES * 2 + n_arr.length);
         out.putInt(n_arr.length);
         out.put(n_arr);
-        out.put(e_arr);
+        out.putInt(this.e.intValue());
         out.rewind();
         byte[] tmp = new byte[out.remaining()];
         out.get(tmp);
@@ -50,5 +54,13 @@ public class PublicKey implements Key {
             Printer.error("The format of the public key does not meet the requirements, it has probably been changed.");
             System.exit(1);
         }
+    }
+
+    public BigInteger getExponent() {
+        return this.e;
+    }
+
+    public BigInteger getModulo() {
+        return this.n;
     }
 }

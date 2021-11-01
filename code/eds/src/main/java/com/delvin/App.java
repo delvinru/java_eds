@@ -66,11 +66,10 @@ public class App {
         if (args.getMode().equals("sign")) {
             Printer.success("Start signing...");
             sign.createSign();
+        } else {
+            Printer.success("Check sign...");
+            sign.checkSign();
         }
-        // } else {
-        // Printer.success("Check sign...");
-        // sign.checkSign();
-        // }
 
         Printer.success("Done");
     }

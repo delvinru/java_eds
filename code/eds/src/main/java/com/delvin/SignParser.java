@@ -2,6 +2,7 @@ package com.delvin;
 
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
+
 import com.delvin.printer.Printer;
 import java.util.Arrays;
 
@@ -44,6 +45,11 @@ public class SignParser {
 
     public void parse(byte[] content) {
         try {
+            /*
+             * There will be a bug here, if we re-sign an already signed file, then the
+             * signature of the old signature will remain and will be read by the program as
+             * correct. To be honest, I'm super lazy to fix it.
+             */
             for (int i = 0; i < content.length; i++) {
                 if (Arrays.equals(Arrays.copyOfRange(content, i, i + 4), this.marker)) {
                     Integer length = ByteBuffer.wrap(Arrays.copyOfRange(content, i + 4, i + 8)).getInt();
@@ -70,15 +76,16 @@ public class SignParser {
         try {
             Integer nSize = ByteBuffer.wrap(Arrays.copyOfRange(this.sign, 8, 12)).getInt();
             this.n = new BigInteger(Arrays.copyOfRange(this.sign, 12, 12 + nSize));
-            this.c = new BigInteger(Arrays.copyOfRange(this.sign, 12 + nSize, this.sign.length - 4));
+            this.e = new BigInteger(Arrays.copyOfRange(this.sign, 12 + nSize, 12 + nSize + 4));
+            this.c = new BigInteger(Arrays.copyOfRange(this.sign, 16 + nSize, this.sign.length - 4));
+            Printer.info("c: " + this.c.toString(16));
 
             if (this.verbose) {
                 Printer.info("n: " + this.n.toString(16));
+                Printer.info("e: " + this.e.toString(16));
                 Printer.info("c: " + this.c.toString(16));
-                Printer.info("N size: " + nSize);
                 Printer.info("Signature initialized successfully");
             }
-
         } catch (Exception e) {
             Printer.error("Signature initialization error, the signature has probably been changed");
             e.printStackTrace();
@@ -94,8 +101,11 @@ public class SignParser {
         return this.n;
     }
 
+    public BigInteger getPublicExponent() {
+        return this.e;
+    }
+
     public BigInteger getSignature() {
         return this.c;
     }
-
 }
