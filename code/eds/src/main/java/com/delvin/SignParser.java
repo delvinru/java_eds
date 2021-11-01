@@ -30,17 +30,6 @@ public class SignParser {
         return result;
     }
 
-    public String bytesToHex(byte[] bytes) {
-        char[] HEX_ARRAY = "0123456789ABCDEF".toCharArray();
-        char[] hexChars = new char[bytes.length * 2];
-        for (int j = 0; j < bytes.length; j++) {
-            int v = bytes[j] & 0xFF;
-            hexChars[j * 2] = HEX_ARRAY[v >>> 4];
-            hexChars[j * 2 + 1] = HEX_ARRAY[v & 0x0F];
-        }
-        return new String(hexChars);
-    }
-
     private byte[] generateDump(byte[] signature) {
         ByteBuffer out = ByteBuffer.allocateDirect(signature.length + Integer.BYTES * 3);
         out.put(this.marker);
@@ -62,7 +51,8 @@ public class SignParser {
                         Printer.info("Find length: " + length.toString());
 
                     if (Arrays.equals(Arrays.copyOfRange(content, i + 8 + length, i + 12 + length), this.marker)) {
-                        Printer.success("Find signature in file");
+                        if (this.verbose)
+                            Printer.info("Find signature in file");
                         this.data = Arrays.copyOfRange(content, 0, i);
                         this.sign = Arrays.copyOfRange(content, i, content.length);
                         this.initValues();
@@ -78,13 +68,11 @@ public class SignParser {
 
     private void initValues() {
         try {
-            this.e = new BigInteger(Arrays.copyOfRange(this.sign, 8, 12));
-            Integer nSize = ByteBuffer.wrap(Arrays.copyOfRange(this.sign, 12, 16)).getInt();
-            this.n = new BigInteger(Arrays.copyOfRange(this.sign, 16, 16 + nSize));
-            this.c = new BigInteger(Arrays.copyOfRange(this.sign, 16 + nSize, this.sign.length - 4));
+            Integer nSize = ByteBuffer.wrap(Arrays.copyOfRange(this.sign, 8, 12)).getInt();
+            this.n = new BigInteger(Arrays.copyOfRange(this.sign, 12, 12 + nSize));
+            this.c = new BigInteger(Arrays.copyOfRange(this.sign, 12 + nSize, this.sign.length - 4));
 
             if (this.verbose) {
-                Printer.info("e: " + this.e.toString(16));
                 Printer.info("n: " + this.n.toString(16));
                 Printer.info("c: " + this.c.toString(16));
                 Printer.info("N size: " + nSize);
@@ -100,10 +88,6 @@ public class SignParser {
 
     public byte[] getFileContent() {
         return this.data;
-    }
-
-    public BigInteger getExponent() {
-        return this.e;
     }
 
     public BigInteger getModulo() {

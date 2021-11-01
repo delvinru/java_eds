@@ -18,7 +18,6 @@ import com.delvin.printer.Printer;
 
 public class App {
     public static void main(String... argv) {
-        Printer.success("Start signing...");
 
         Args args = new Args();
         JCommander jc = JCommander.newBuilder().addObject(args).build();
@@ -29,17 +28,46 @@ public class App {
             System.exit(1);
         }
 
-        if (args.isHelp() || args.getAlgorithm().equals("none") || args.getMode().equals("none")) {
+        if (args.isHelp()) {
             jc.usage();
             System.exit(1);
         }
 
+        if (!args.checkFileName()) {
+            Printer.error("Please specify the file to be signed.");
+            System.exit(1);
+        }
+
+        // if (args.getGenerateKey())
+        // {
+
+        // }
+
+        if (!args.checkKeySize()) {
+            Printer.error(args.incorrectKeySize());
+            System.exit(1);
+        }
+
+        if (args.getAlgorithm().equals("none")) {
+            Printer.error(args.incorrectHash());
+            System.exit(1);
+        }
+
+        if (args.getMode().equals("none")) {
+            Printer.error(args.incorrectMode());
+            System.exit(1);
+        }
+
         Sign sign = new Sign(args);
-        if(args.getMode().equals("sign"))
+        if (args.getMode().equals("sign")) {
+            Printer.success("Start signing...");
             sign.createSign();
-        else 
-            sign.checkSign();
-        
+        }
+        // } else {
+        // Printer.success("Check sign...");
+        // sign.checkSign();
+        // }
+
         Printer.success("Done");
     }
 }
