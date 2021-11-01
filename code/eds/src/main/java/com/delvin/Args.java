@@ -1,6 +1,7 @@
 package com.delvin;
 
 import com.beust.jcommander.Parameter;
+import com.delvin.printer.Printer;
 
 class Args {
     @Parameter(names = { "-h", "--help" }, description = "Show this help menu and exit")
@@ -12,7 +13,7 @@ class Args {
 
     // TODO: add check for empty file
     @Parameter(names = { "-f", "--file" }, description = "The file to be signed")
-    private String inFile = "none";
+    private String inFile;
 
     @Parameter(names = { "-o", "--out" }, description = "Output file name")
     private String outFile = "file.sig";
@@ -52,7 +53,9 @@ class Args {
     }
 
     public String getOutFileName() {
-        return this.inFile + ".sig";
+        if (this.outFile == null || this.outFile.isEmpty())
+            return this.inFile + ".sig";
+        return this.outFile;
     }
 
     public Integer getKeySize() {
@@ -86,6 +89,10 @@ class Args {
         return this.privateKeyFile;
     }
 
+    public boolean getGenerateFlag() {
+        return this.generate;
+    }
+
     public String incorrectHash() {
         return "Incorrect algorithm, choose one of the presented: " + String.join(", ", this.availableHashes);
     }
@@ -99,6 +106,9 @@ class Args {
     }
 
     public boolean checkKeySize() {
+        if (this.keySize >= 8192)
+            Printer.warning("This may take some time, since the key size is large.");
+
         if (this.keySize < 2048 || this.keySize % 2 != 0)
             return false;
         return true;

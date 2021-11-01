@@ -33,16 +33,7 @@ public class App {
             System.exit(1);
         }
 
-        if (!args.checkFileName()) {
-            Printer.error("Please specify the file to be signed.");
-            System.exit(1);
-        }
-
-        // if (args.getGenerateKey())
-        // {
-
-        // }
-
+        Sign sign = new Sign(args);
         if (!args.checkKeySize()) {
             Printer.error(args.incorrectKeySize());
             System.exit(1);
@@ -50,15 +41,28 @@ public class App {
 
         if (args.getAlgorithm().equals("none")) {
             Printer.error(args.incorrectHash());
+            jc.usage();
+            System.exit(1);
+        }
+
+        if (args.getGenerateFlag()) {
+            Printer.success("Generating a public/private key pair");
+            sign.dumpKeyPair();
+            System.exit(0);
+        }
+
+        if (!args.checkFileName()) {
+            Printer.error("Please specify the file to be signed.");
+            jc.usage();
             System.exit(1);
         }
 
         if (args.getMode().equals("none")) {
             Printer.error(args.incorrectMode());
+            jc.usage();
             System.exit(1);
         }
 
-        Sign sign = new Sign(args);
         if (args.getMode().equals("sign")) {
             Printer.success("Start signing...");
             sign.createSign();

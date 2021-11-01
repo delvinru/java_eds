@@ -37,14 +37,8 @@ public class Sign {
 
             RSA rsa = new RSA(hash, keySize, verbose);
             byte[] signature = rsa.encrypt(content);
-
-            byte[] privateKeyDump = rsa.getPrivateKeyDump();
-            byte[] publicKeyDump = rsa.getPublicKeyDump();
-
             this.saveToFile(content, signature);
-
-            this.saveKey(this.publicKeyFile, publicKeyDump);
-            this.saveKey(this.privateKeyFile, privateKeyDump);
+            this.dumpKeyPair(rsa);
 
         } catch (Exception e) {
             Printer.error("Got error: " + e.toString());
@@ -52,18 +46,37 @@ public class Sign {
     }
 
     // public void checkSign() {
-    //     try {
-    //         File file = new File(this.inFile);
-    //         byte[] content = Files.readAllBytes(file.toPath());
-    //         this.verifySign(content);
-    //     } catch (Exception e) {
-    //         e.printStackTrace();
-    //     }
+    // try {
+    // File file = new File(this.inFile);
+    // byte[] content = Files.readAllBytes(file.toPath());
+    // this.verifySign(content);
+    // } catch (Exception e) {
+    // e.printStackTrace();
+    // }
     // }
 
-    // public void generateKeyPair() {
+    private void dumpKeyPair(RSA rsa) {
+        try {
+            byte[] privateKeyDump = rsa.getPrivateKeyDump();
+            byte[] publicKeyDump = rsa.getPublicKeyDump();
+            this.saveKey(this.publicKeyFile, publicKeyDump);
+            this.saveKey(this.privateKeyFile, privateKeyDump);
+        } catch (Exception e) {
+            Printer.error("Got error: " + e.toString());
+        }
+    }
 
-    // }
+    public void dumpKeyPair() {
+        try {
+            RSA rsa = new RSA(hash, keySize, verbose);
+            byte[] privateKeyDump = rsa.getPrivateKeyDump();
+            byte[] publicKeyDump = rsa.getPublicKeyDump();
+            this.saveKey(this.publicKeyFile, publicKeyDump);
+            this.saveKey(this.privateKeyFile, privateKeyDump);
+        } catch (Exception e) {
+            Printer.error("Got error: " + e.toString());
+        }
+    }
 
     private void saveKey(String filename, byte[] content) {
         File out = new File(filename);
@@ -89,30 +102,31 @@ public class Sign {
     }
 
     // private void verifySign(byte[] content) {
-    //     SignParser parser = new SignParser(this.verbose);
-    //     parser.parse(content);
-    //     RSA rsa = new RSA(parser.getExponent(), parser.getModulo(), parser.getSignature(), this.verbose);
+    // SignParser parser = new SignParser(this.verbose);
+    // parser.parse(content);
+    // RSA rsa = new RSA(parser.getExponent(), parser.getModulo(),
+    // parser.getSignature(), this.verbose);
 
-    //     byte[] fileContent = parser.getFileContent();
-    //     BigInteger decryptedHash = rsa.decrypt();
-    //     String[] hashes = this.hashes;
+    // byte[] fileContent = parser.getFileContent();
+    // BigInteger decryptedHash = rsa.decrypt();
+    // String[] hashes = this.hashes;
 
-    //     boolean flag = false;
-    //     try {
-    //         for (String hash_type : hashes) {
-    //             MessageDigest tmpHash = MessageDigest.getInstance(hash_type);
-    //             tmpHash.update(fileContent, 0, fileContent.length);
+    // boolean flag = false;
+    // try {
+    // for (String hash_type : hashes) {
+    // MessageDigest tmpHash = MessageDigest.getInstance(hash_type);
+    // tmpHash.update(fileContent, 0, fileContent.length);
 
-    //             if (decryptedHash.equals(new BigInteger(1, tmpHash.digest()))) {
-    //                 Printer.success("The file has not been modified, the signature is correct.");
-    //                 flag = true;
-    //                 break;
-    //             }
-    //         }
-    //         if (!flag)
-    //             Printer.warning("The contents of the file have been changed");
-    //     } catch (Exception e) {
-    //         e.printStackTrace();
-    //     }
+    // if (decryptedHash.equals(new BigInteger(1, tmpHash.digest()))) {
+    // Printer.success("The file has not been modified, the signature is correct.");
+    // flag = true;
+    // break;
+    // }
+    // }
+    // if (!flag)
+    // Printer.warning("The contents of the file have been changed");
+    // } catch (Exception e) {
+    // e.printStackTrace();
+    // }
     // }
 }
