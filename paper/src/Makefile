@@ -1,6 +1,6 @@
 CC=pdflatex
 OUT=../build
-FILE=main.text
+FILE=main.tex
 
 all: build
 
