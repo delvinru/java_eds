@@ -3,9 +3,11 @@ package com.delvin;
 import com.delvin.cipher.PrivateKey;
 import com.delvin.cipher.PublicKey;
 import com.delvin.cipher.RSA;
+import com.delvin.hash.Hash;
+import com.delvin.hash.MessageDigest;
+import com.delvin.hash.NoImplementedAlgorithmException;
 import com.delvin.printer.Printer;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -134,15 +136,14 @@ public class Sign {
 
         try {
             for (String hash_type : this.hashes) {
-                MessageDigest testHash = MessageDigest.getInstance(hash_type);
-                testHash.update(fileContent, 0, fileContent.length);
-                if (originalHash.equals(new BigInteger(1, testHash.digest()))) {
+                Hash testHash = MessageDigest.getInstance(hash_type);
+                if (originalHash.equals(new BigInteger(1, testHash.digest(fileContent)))) {
                     Printer.success("The file has not been modified, the signature is correct.");
                     flagFInd = true;
                     break;
                 }
             }
-        } catch (NoSuchAlgorithmException e) {
+        } catch (NoImplementedAlgorithmException e) {
         }
 
         if (!flagFInd)

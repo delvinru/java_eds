@@ -2,6 +2,7 @@ package com.delvin;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
+import com.delvin.hash.SHA1;
 import com.delvin.printer.Printer;
 
 /*
@@ -18,7 +19,6 @@ import com.delvin.printer.Printer;
 
 public class App {
     public static void main(String... argv) {
-
         Args args = new Args();
         JCommander jc = JCommander.newBuilder().addObject(args).build();
         jc.setProgramName("esd");

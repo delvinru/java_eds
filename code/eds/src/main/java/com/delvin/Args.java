@@ -20,9 +20,9 @@ class Args {
     @Parameter(names = { "-b", "--bytes" }, description = "The size of the key used to generate the EDS")
     private Integer keySize = 4096;
 
-    @Parameter(names = { "-a", "--algorithm" }, description = "Choose an hash for sign: MD5, SHA-1, SHA-256, SHA-512")
-    private String algorithm = "SHA-256";
-    private String[] availableHashes = { "MD5", "SHA-1", "SHA-256", "SHA-512" };
+    @Parameter(names = { "-a", "--algorithm" }, description = "Choose an hash for sign: SHA-1")
+    private String algorithm = "SHA-1";
+    private String[] availableHashes = { "SHA-1" };
 
     @Parameter(names = { "-g", "--generate" }, description = "Generate a public/private key pair")
     private boolean generate = false;

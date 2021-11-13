@@ -1,24 +1,27 @@
 package com.delvin.cipher;
 
 import java.math.BigInteger;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+
+import com.delvin.hash.Hash;
+import com.delvin.hash.MessageDigest;
+import com.delvin.hash.NoImplementedAlgorithmException;
 
 import com.delvin.printer.Printer;
 
 public class RSA {
     private PrivateKey privateKey;
     private PublicKey publicKey;
-    private MessageDigest hash;
+    private Hash hash;
     private boolean verbose;
 
-    public RSA(String hash, PrivateKey privateKey) throws NoSuchAlgorithmException {
+    public RSA(String hash, PrivateKey privateKey) throws NoImplementedAlgorithmException {
         this.publicKey = new PublicKey(privateKey);
         this.privateKey = privateKey;
+        // this.hash = MessageDigest.getInstance(hash);
         this.hash = MessageDigest.getInstance(hash);
     }
 
-    public RSA(String hash, Integer keySize, boolean verbose) throws NoSuchAlgorithmException {
+    public RSA(String hash, Integer keySize, boolean verbose) throws NoImplementedAlgorithmException {
         this.hash = MessageDigest.getInstance(hash);
         this.verbose = verbose;
 
@@ -33,8 +36,7 @@ public class RSA {
     }
 
     public byte[] encrypt(byte[] content) {
-        this.hash.update(content, 0, content.length);
-        BigInteger message = new BigInteger(1, this.hash.digest());
+        BigInteger message = new BigInteger(1, this.hash.digest(content));
 
         if (this.verbose)
             Printer.info("hash: " + message.toString(16));
