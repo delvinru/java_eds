@@ -1,9 +1,32 @@
-\documentclass[14pt,russian]{extarticle}
-
+% !TeX program = xelatex
+\documentclass[14pt,a4paper,russian]{article}
 \input{lib/include}
 \input{lib/commands}
 
 \begin{document}
-\input{lib/title.tex}
+
+\input{chapters/title}
+\newpage
+
+\tableofcontents
+\newpage
+
+\input{chapters/introduction}
+\newpage
+
+\input{chapters/theory}
+\newpage
+
+\input{chapters/practice}
+\newpage
+
+\input{chapters/conclusion}
+\newpage
+
+\input{chapters/literature}
+\newpage
+
+\input{chapters/attachaments}
+\newpage
 
 \end{document}

@@ -7,5 +7,4 @@ public class MessageDigest {
         else
             throw new NoImplementedAlgorithmException("Algorithm: " + hashType + " not implemented!");
     }
-
 }

@@ -1,6 +1,97 @@
-\usepackage[T1,T2A]{fontenc}
-\usepackage[utf8]{inputenc}
-\usepackage{geometry}
-\geometry{verbose,tmargin=2cm,bmargin=2cm,lmargin=3cm,rmargin=2cm}
+\usepackage{fontspec}
+\usepackage{xunicode,xltxtra} %пакеты для работы xelatex
+\setmainfont{Times New Roman} %выбор шрифта
+
 \usepackage{setspace}
-\usepackage{tikz}
+
+\usepackage{amsmath, amsfonts, amssymb} %математические пактеы
+\usepackage{geometry} %разметка страницы
+\geometry{
+	lmargin=2.5cm, %левое поле
+	rmargin=1cm, %правое поле
+	tmargin=2cm, %верхнее поле
+	bmargin=2cm, %нижнее поле
+	headheight=14pt,
+	headsep=1cm,
+	footskip=1cm
+}
+
+\usepackage{indentfirst} 
+\renewcommand{\normalsize}{\fontsize{14pt}{21pt}\selectfont} %установка кегля текста в 14
+
+\usepackage{graphics} %пакет для вставки рисунков
+
+\sloppy
+\clubpenalty=10000
+\widowpenalty=10000
+
+\parindent=1.2cm %абзацный отступ
+
+\usepackage{longtable} %пакет для работы с такблицами
+\usepackage{makecell} %пакет для работы с такблицами
+\usepackage{multirow} %пакет для работы с такблицами
+
+\usepackage{caption} %пакте для работы с подписями рисунков и таблиц
+\captionsetup[table]{name=Таблицa ,
+	position=top, 
+	belowskip=0pt,
+	aboveskip=0pt,
+	format = plain,
+	justification=raggedright,
+	labelsep=endash}
+\captionsetup[figure]{name=Рисунок ,
+	position=above,
+	belowskip=0pt,
+	aboveskip=0pt,
+	format = plain,
+	justification=raggedright,
+	labelsep=endash}
+
+\usepackage{graphicx} %пакет для работы с рисунками
+\usepackage{tikz} %пакет для рисования в latex
+\usepackage{xcolor} %пакет для работы с цветом
+\usepackage{colortbl} %пакет для работы с цветом в таблицах
+\usetikzlibrary{arrows} %библиотека для работы со стрелками в рисуемых схемах
+
+\newtheorem{opr}{Определение}[section] 
+\newtheorem{lem}{Лемма}[section]
+\newtheorem{utv}{Утверждение}[section]
+\newtheorem{zam}{Замечания}[section]
+\newtheorem{teor}{Теорема}[section]
+
+\usepackage{titlesec} %пакет для заголовков
+\usepackage{tcolorbox} %пакет для работы с цветами
+
+\usepackage{url}
+
+\titleformat{\section}{\fontsize{16pt}{24pt}\selectfont\bfseries}{\thesection.}{.5em}{}
+\titleformat{\subsection}{\normalsize\bfseries}{\thesubsection.}{.5em}{}
+\titleformat{\subsubsection}{\normalsize\bfseries}{\thesubsubsection.}{.5em}{}
+
+%определение описания нумерованных спсиков
+\renewcommand{\labelenumi}{\arabic{enumi})}
+\renewcommand{\labelenumii}{\arabic{enumi}.\arabic{enumii})}
+\renewcommand{\labelenumiii}{\arabic{enumi}.\arabic{enumii}.\arabic{enumiii})}
+\renewcommand{\labelenumiv}{\arabic{enumi}.\arabic{enumii}.\arabic{enumiii}.\arabic{enumiv})}
+
+\usepackage{algorithm} %пакеты для работы с алгоритмами
+\usepackage{algpseudocode}
+
+\usepackage{listings}
+\lstloadlanguages{C, Python, [x86masm]{Assembler}, bash}
+\lstset{language=[LaTex] Tex,
+	extendedchars=true,
+	%escapechar=|,
+	%frame=tb,
+	numbersep=5pt,
+	commentstyle=\itshape,
+	stringstyle=\bfseries,
+	keepspaces=true,
+	showstringspaces=false,
+	tabsize=2,
+	breaklines=true
+}
+
+\renewcommand{\refname}{Список литературы}
+\renewcommand{\contentsname}{Оглавление}
+\usepackage[linktoc=all]{hyperref}

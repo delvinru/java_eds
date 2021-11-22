@@ -110,5 +110,4 @@ public class SHA1 implements Hash {
     private int rol(int num, int cnt) {
         return (num << cnt) | (num >>> (32 - cnt));
     }
-
 }
