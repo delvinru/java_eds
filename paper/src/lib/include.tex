@@ -77,8 +77,10 @@
 \usepackage{algorithm} %пакеты для работы с алгоритмами
 \usepackage{algpseudocode}
 
+\usepackage{xcolor}
+
 \usepackage{listings}
-\lstloadlanguages{C, Python, [x86masm]{Assembler}, bash}
+\lstloadlanguages{C, Python, [x86masm]{Assembler}, bash, Java}
 \lstset{language=[LaTex] Tex,
 	extendedchars=true,
 	%escapechar=|,
@@ -89,7 +91,8 @@
 	keepspaces=true,
 	showstringspaces=false,
 	tabsize=2,
-	breaklines=true
+	breaklines=true,
+	basicstyle=\ttfamily\normalsize
 }
 
 \renewcommand{\refname}{Список литературы}

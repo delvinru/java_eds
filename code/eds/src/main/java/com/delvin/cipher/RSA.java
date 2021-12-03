@@ -17,7 +17,6 @@ public class RSA {
     public RSA(String hash, PrivateKey privateKey) throws NoImplementedAlgorithmException {
         this.publicKey = new PublicKey(privateKey);
         this.privateKey = privateKey;
-        // this.hash = MessageDigest.getInstance(hash);
         this.hash = MessageDigest.getInstance(hash);
     }
 

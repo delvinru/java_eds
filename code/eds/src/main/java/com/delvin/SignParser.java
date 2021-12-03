@@ -43,7 +43,11 @@ public class SignParser {
         return tmp;
     }
 
-    public void parse(byte[] content) {
+    /**
+     * @param content - file data
+     * @return index of signature in file
+     */
+    public Integer parse(byte[] content) {
         try {
             /*
              * There will be a bug here, if we re-sign an already signed file, then the
@@ -62,7 +66,7 @@ public class SignParser {
                         this.data = Arrays.copyOfRange(content, 0, i);
                         this.sign = Arrays.copyOfRange(content, i, content.length);
                         this.initValues();
-                        break;
+                        return i;
                     }
                 }
             }
@@ -70,6 +74,8 @@ public class SignParser {
             Printer.warning("File doesn't contain signature...");
             System.exit(1);
         }
+        // Just stub for compilator
+        return null;
     }
 
     private void initValues() {

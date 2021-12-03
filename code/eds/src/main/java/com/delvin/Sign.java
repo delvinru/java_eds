@@ -13,6 +13,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.nio.file.Files;
+import java.util.Arrays;
 
 public class Sign {
     private String hash;
@@ -118,9 +119,21 @@ public class Sign {
         Printer.success("Saved to " + this.outFile);
     }
 
+    private void saveToFile(byte[] content) {
+        File out = new File(this.inFile.replace(".sig", ""));
+        try (FileOutputStream stream = new FileOutputStream(out)) {
+            stream.write(content);
+        } catch (IOException e) {
+            Printer.error("Can't save data to file");
+            System.exit(1);
+        }
+        Printer.success("Document " + this.inFile + " restored");
+        Printer.success("Saved to " + this.inFile.replace(".sig", ""));
+    }
+
     private void verifySign(byte[] content) throws IOException {
         SignParser parser = new SignParser(this.verbose);
-        parser.parse(content);
+        Integer idxSign = parser.parse(content);
 
         RSA rsa;
         if (this.checkPublicKeyFile)
@@ -140,6 +153,7 @@ public class Sign {
                 if (originalHash.equals(new BigInteger(1, testHash.digest(fileContent)))) {
                     Printer.success("The file has not been modified, the signature is correct.");
                     flagFInd = true;
+                    this.saveToFile(Arrays.copyOfRange(content, 0, idxSign));
                     break;
                 }
             }
